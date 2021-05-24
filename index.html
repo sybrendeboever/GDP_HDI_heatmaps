@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Creating Vega Viz</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.9.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
+    <style>
+        .imageLarge{
+            z-index: 1;
+            left: 100px;
+        }
+
+        .imageSmall {
+            z-index: 2;
+            left: 100px;
+        }
+    </style>
+  </head>
+  <body>
+    <p style="font-weight:bold;text-align:center;font-size:50px;">
+        Interactive Vega GDP & HDI heatmap
+    </p>
+    <p style="font-weight:bold;text-align:center;font-size:15px;">
+        * VisualReality *
+    </p>
+    <p style="font-weight:bold;text-align:center;font-size:22px;">
+        ...
+    </p>
+    <hr>
+    
+    <div id="vis" class="imageLarge"></div>
+    <script type="text/javascript">
+      var yourViz = {
+        "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 600,
+  "height": 400,
+  "padding": 0,
+  "signals": [
+    { "name": "Year",
+      "value": 2016,
+      "bind": {"input": "range",
+               "min": 1990,
+               "max": 2016,
+               "step": 1
+              }
+    },
+    {
+      "description": "Any datapoint is activated",
+      "name": "datapoint_is_activated",
+      "value": false,
+      "on": [
+        {"events": "rect:mouseover", "update": "true"},
+        {"events": "rect:mouseout", "update": "false"}
+      ]
+    },
+    {
+      "description": "Active datapoint",
+      "name": "activated_datapoint",
+      "value": null,
+      "on": [
+        {"events": "rect:mouseover", "update": "item()"},
+        {"events": "rect:mouseout", "update": "null"}
+      ]
+    }
+    ],
+  "data": [
+    {
+      "name": "data",
+      "url": "https://raw.githubusercontent.com/OmerYigit28/DataVisualization/main/ContinentalGDP.json"
+      },
+    {
+      "name": "dataYear",
+      "source": "data",
+      "transform": [
+        {"type": "filter", "expr": "datum.Year == Year"}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "GDP_range",
+      "type": "band",
+      "domain": ["<10K$","10K$-20K$","20K$-30K$","30K$-40K$","40K$-50K$","50K$-60K$","60K$-70K$","70K$-80K$","80K$-90K$","90K$-100K$",">100K$"],
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "domain": {"data": "dataYear", "field": "Continent"},
+      "range": "height"
+    },
+    {
+      "name": "color",
+      "type": "linear",
+      "range": {"scheme": "Greens"},
+      "domain": {"data": "dataYear", "field": "LowCarbonShare"},
+      "zero": false,
+      "nice": true
+    }
+  ],
+  "axes": [{"orient": "top", "scale": "GDP_range", "domain": true, "title": "GDP_range"},{"orient": "left", "scale": "y", "domain": true, "title": "Continents"}],
+  "legends": [
+    {
+      "fill": "color",
+      "type": "gradient",
+      "title": "Low Carbon Share (%)",
+      "titleFontSize": 12,
+      "titlePadding": 4,
+      "gradientLength": {"signal": "height - 16"}
+    }
+  ],"marks": [
+    {
+      "type": "group",
+      "encode": {"update": {"width": {"value": 100}, "height": {"value": 100}}},
+      "marks": [
+        {
+          "type": "rect",
+          "from": {"data": "dataYear"},
+          "encode": {
+            "enter": {
+              "x": {"scale": "GDP_range", "field":  "GDP_range"},
+              "y": {"scale": "y", "field": "Continent"},
+              "tooltip": {
+                "signal": "{title: 'Low Carbon Share (%)','Continent': datum.Continent, 'Low Carbon (%)': datum.LowCarbonShare, 'GDP per capita': datum.GDP_range}"
+              }
+
+            },
+            "update": {
+              "fill": {"scale": "color", "field": "LowCarbonShare"},
+              "opacity": [
+                
+                {"value": 1}
+              ],
+              "width": {"value": 54},
+              "height": [
+
+                {"scale": "y", "band": 1}
+              ]
+            }
+          }
+        }
+      ]
+    }
+    
+  ]
+      };
+      vegaEmbed('#vis', yourViz);
+    </script>
+
+<div id="vis_small" class="imageSmall"></div>
+    <script type="text/javascript">
+      var yourViz = {
+        "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 600,
+  "height": 400,
+  "padding": 0,
+  "signals": [
+    { "name": "Year",
+      "value": 2016,
+      "bind": {"input": "range",
+               "min": 1990,
+               "max": 2016,
+               "step": 1
+              }
+    },
+    {
+      "description": "Any datapoint is activated",
+      "name": "datapoint_is_activated",
+      "value": false,
+      "on": [
+        {"events": "rect:mouseover", "update": "true"},
+        {"events": "rect:mouseout", "update": "false"}
+      ]
+    },
+    {
+      "description": "Active datapoint",
+      "name": "activated_datapoint",
+      "value": null,
+      "on": [
+        {"events": "rect:mouseover", "update": "item()"},
+        {"events": "rect:mouseout", "update": "null"}
+      ]
+    }
+    ],
+  "data": [
+    {
+      "name": "data",
+      "url": "https://raw.githubusercontent.com/OmerYigit28/DataVisualization/main/ContinentalDevelopment.json"
+      },
+    {
+      "name": "dataYear",
+      "source": "data",
+      "transform": [
+        {"type": "filter", "expr": "datum.Year == Year"}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "HDI_range",
+      "type": "band",
+      "domain": ["0.3-0.4","0.4-0.5","0.5-0.6","0.6-0.7","0.7-0.8","0.8-0.9",">0.9"],
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "domain": {"data": "dataYear", "field": "Continent"},
+      "range": "height"
+    },
+    {
+      "name": "color",
+      "type": "linear",
+      "range": {"scheme": "Greens"},
+      "domain": {"data": "dataYear", "field": "LowCarbonShare"},
+      "zero": false,
+      "nice": true
+    }
+  ],
+  "axes": [{"orient": "top", "scale": "HDI_range", "domain": true, "title": "HDI_range"},{"orient": "left", "scale": "y", "domain": true, "title": "Continents"}],
+  "legends": [
+    {
+      "fill": "color",
+      "type": "gradient",
+      "title": "Low Carbon Share (%)",
+      "titleFontSize": 12,
+      "titlePadding": 4,
+      "gradientLength": {"signal": "height - 16"}
+    }
+  ],"marks": [
+    {
+      "type": "group",
+      "encode": {"update": {"width": {"value": 100}, "height": {"value": 100}}},
+      "marks": [
+        {
+          "type": "rect",
+          "from": {"data": "dataYear"},
+          "encode": {
+            "enter": {
+              "x": {"scale": "HDI_range", "field":  "HDI_range"},
+              "y": {"scale": "y", "field": "Continent"},
+              "tooltip": {
+                "signal": "{title: 'Low Carbon Share (%)','Continent': datum.Continent, 'Low Carbon (%)': datum.LowCarbonShare, 'HDI': datum.HDI_range}"
+              }
+
+            },
+            "update": {
+              "fill": {"scale": "color", "field": "LowCarbonShare"},
+              "opacity": [
+                
+                {"value": 1}
+              ],
+              "width": {"value": 85},
+              "height": [
+
+                {"scale": "y", "band": 1}
+              ]
+            }
+          }
+        }
+      ]
+    }
+    
+  ]
+      };
+      vegaEmbed('#vis_small', yourViz);
+    </script>
+
+  </body>
+</html>
